@@ -5,11 +5,16 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Keys;
 
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.*;
 
 public class TestRegistrationOfCardDelivery {
+    public String generateDate(int days, String pattern) {
+        return LocalDate.now().plusDays(days).format(DateTimeFormatter.ofPattern(pattern));
+    }
 
     @Test
 
@@ -18,14 +23,15 @@ public class TestRegistrationOfCardDelivery {
         open("http://localhost:9999/");
         $("[data-test-id='city'] input ").setValue("Майкоп");
         $("[data-test-id='date'] input ").doubleClick().sendKeys(Keys.DELETE);
-        $("[data-test-id='date'] input ").setValue("06.02.2024");
+        String planningDate = generateDate(4, "dd.MM.yyyy");
+        $("[data-test-id='date'] input ").setValue(planningDate);
         $("[data-test-id='name'] input ").setValue("Гудов Роман");
         $("[data-test-id='phone'] input ").setValue("+79131231265");
         $("[data-test-id='agreement']").click();
         $("button.button").click();
         $(".notification__content")
                 .shouldBe(Condition.visible, Duration.ofSeconds(15))
-                .shouldHave(Condition.exactText("Встреча успешно забронирована на " + "06.02.2024"));
+                .shouldHave(Condition.exactText("Встреча успешно забронирована на " + planningDate));
 
 
     }
